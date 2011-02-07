@@ -758,7 +758,7 @@ sub parseName {
         $lastname = "$lastname Jr" if $jr;
         # add prefixes or Jr to lastname
         #warn join(" - ",@bits);
-        while ($bits[-1] =~ /^$PREFIXES$/i) {
+        while (defined $bits[-1] and $bits[-1] =~ /^$PREFIXES$/i) {
             #warn "GOT PREFIX: $bits[-1]";
             $lastname = splice(@bits,-1,1) . " $lastname";
         }
@@ -949,8 +949,8 @@ sub samePerson {
 	$firsta =~ s/\s+/ /g;
 	$firstb =~ s/\s+/ /g;
 =cut
-	my @at = split(" ",$firsta);
-	my @bt = split(" ",$firstb);
+	my @at = split(" ",$firsta || '');
+	my @bt = split(" ",$firstb || '');
 	#print "AT: " . join("-",@at) . "\n";
 	#print "BT: " . join("-",@bt) . "\n";
 	# compare each token pair as follows:

@@ -1,8 +1,9 @@
+.gitinore
 Changes
+lib/Text/Names.pm
 Makefile.PL
-MANIFEST
+MANIFEST			This list of files
 README
 t/01-abbreviations.t
 t/02-samePerson.t
 t/03-parseNames.t
-lib/Text/Names.pm

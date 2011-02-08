@@ -41,7 +41,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = ();
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 our @NAME_PREFIXES = qw(de di du da le la van von der den des ten ter);
 

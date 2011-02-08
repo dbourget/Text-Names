@@ -26,6 +26,7 @@ my %tests = (
     'Dr. Jean Claude van Damme, Prof R de Sousa' => 'van Damme, Jean Claude; de Sousa, R.',
     "Maureen A. O'Malley" => "O'Malley, Maureen A.",
     "Gusmão da Silva, Guilherme" => "Gusmão da Silva, Guilherme",
+    "D Bourget, Zbigniew Z Lukasiak and John Doe" => "Bourget, D.; Lukasiak, Zbigniew Z.; Doe, John",
     cleanName("Guilherme Gusmão da Silva") => "da Silva, Guilherme Gusmão"
 );
 #print cleanName("Guilherme Gusmão da Silva");

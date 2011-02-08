@@ -5,4 +5,6 @@ Revision history for Perl extension Text::Names.
 		-AX Text::Names
 0.02  Feb 8, 2011
     - Fixed dependency issues
+0.03  Feb 8, 2011
+    - Improved doc
 

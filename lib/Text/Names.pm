@@ -41,7 +41,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = ();
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 our @NAME_PREFIXES = qw(de di du da le la van von der den des ten ter);
 
@@ -1044,6 +1044,7 @@ sub cleanName {
     $n =~ s/Get checked abstract//g;
     $n = rmTags($n);
     $n =~ s/, By$//i;
+
     #if ($reparse and $n =~ s/,/) {
     #    my ($l,$f) = split(/,\s*/,$n);
     #    my ($f,$l) = parseName(join(' ',($f,$l)));
@@ -1072,19 +1073,11 @@ sub cleanName {
     #links aren't names
     $n = "Unknown, Unknown" if $n =~ /http:\/\//;
 
-	# de-expand middle names 
-	# TODO more elegant regexp that doesn't have to be repeated to get all middle names?
-	#$n =~ s/(,\s*[A-Z][\w'-]+\s+.*?[A-Z])[\w'-]+(\s*)/$1.$2/g;
-	#$n =~ s/(,\s*[A-Z][\w'-]+\s+.*?[A-Z])[\w'-]+(\s*)/$1.$2/g;
-	#$n =~ s/(,\s*[A-Z][\w'-]+\s+.*?[A-Z])[\w'-]+(\s*)/$1.$2/g;
-
-   	#print "res: $n\n";
- # capitalize if nocaps
+    # capitalize if nocaps
     if ($n !~ /[A-Z]/) {
         $n = capitalize($n,notSentence=>1);#_title($n, PRESERVE_ANYCAPS=>1, NOT_CAPITALIZED=>\@PREFIXES);	
     }
 
-	#print "pos caps: $n\n";
     $n = composeName(parseName($n));
     # now final capitalization
     $n = capitalize($n,notSentence=>1); #,PRESERVE_ANYCAPS=>1, NOT_CAPITALIZED=>\@PREFIXES);	
@@ -1210,7 +1203,7 @@ Text::Names - Perl extension for name parsing and normalization
 
     my @authors = parseNames("D Bourget, Zbigniew Z Lukasiak and John Doe");
 
-    # @authors = ('Bourget, D.','Lukasiak Z., Zbigniew','Doe, John')
+    # @authors = ('Bourget, D.','Lukasiak, Zbigniew Z.','Doe, John')
 
     print "same!" if samePerson("Dave Bourget","David F. Bourget");
 
@@ -1228,23 +1221,31 @@ This modules normalizes names to this format:
 
 Lastname(s) [Jr], Given name(s)
 
+Some examples:
+
+Bourget, David Joseph Richard
+Bourget Jr, David
+Bourget, D. J. R.
+
+These are all normalized names. This format is what is referred to as the normalized representation of a name here. 
+
 =head1 SUBROUTINES
 
 =head2 parseNames(string names): array
 
-Takes a string of names as parameters and returns an array of normalized representations of the names in the string. This routines understands a wide variety of formattings for names and lists of names. 
+Takes a string of names as parameters and returns an array of normalized representations of the names in the string. This routines understands a wide variety of formattings for names and lists of names typically found as list of authors in bibliographic citations. See the test 03-parseNames.t for multiple examples.
 
 =head2 parseNameList(array names): array
 
 Takes an array of names (as strings) and returns an array of normalized representations of the names in the array.
 
-=head2 parseName(string name): string
+=head2 parseName(string name): array
 
-Takes a name in one of the multiple formats that one can write a name in, and returns it in a normalized form.
+Takes a name in one of the multiple formats that one can write a name in, and returns it as an array representing the post-comma and pre-comma parts of its normalized form (yes, in that order). For example, parseName("David Bourget") returns ('David','Bourget').
 
 =head2 cleanName(string name): string
 
-Likes parseName, but does additional cleaning-up. To be prefered to parseName in most cases.
+Likes parseName, but a) returns the normalized form of the name instead of an array, and b) does additional cleaning-up. To be prefered to parseName in most cases and by default if processing variable or dubious data.
 
 =head2 parseName2(string name): array
 
@@ -1278,9 +1279,9 @@ Given a normalized name of the form "last, given", returns "given last".
 
 =head2 normalizeNameWithspace(string name): string
 
-Normalizes the withspace within a name.
+Normalizes the withspace within a name. This is mainly for internal usage.
 
-=head2 EXPORT
+=head1 EXPORT
 
 None by default.
 
@@ -1292,7 +1293,7 @@ The related L<Biblio::Citation::Compare> module.
 
 =head1 AUTHOR
 
-David Bourget
+David Bourget, http://www.dbourget.com
 
 =head1 COPYRIGHT AND LICENSE
 

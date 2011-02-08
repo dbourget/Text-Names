@@ -6,6 +6,7 @@ ok(samePerson('Dave J. Bourget','David John Bourget'),'Dave J. Bourget -> David 
 ok(samePerson('D J Bourget','David John Bourget'),'D J Bourget -> David John Bourget');
 ok(samePerson('D Bourget','David John Bourget'),'D Bourget -> David John Bourget');
 ok(samePerson('Bourget, David', 'Dave Bourget Jr'), 'Bourget, David -> Dave Bourget Jr');
+ok(samePerson('Dave Bourget','Bourget, David F.'),'Dave Bourget -> Bourget, David F.');
 ok(!samePerson('J Bourget','David John Bourget'),'J Bourget !> David John Bourget');
 ok(!samePerson('D F Bourget','David John Bourget'),'D F Bourget !> David John Bourget');
 ok(!samePerson('John Doe','David John Bourget'),'John Doe !> David John Bourget');

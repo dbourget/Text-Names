@@ -1297,11 +1297,11 @@ The related L<Biblio::Citation::Compare> module.
 
 =head1 AUTHOR
 
-David Bourget, http://www.dbourget.com
+David Bourget, http://www.dbourget.com, with contributions by Zbigniew Lukasiak
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2011 by David Bourget
+Copyright (C) 2011 by David Bourget and University of London
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.10.1 or,

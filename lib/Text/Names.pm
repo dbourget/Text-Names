@@ -41,7 +41,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = ();
 
-our $VERSION = '0.04';
+our $VERSION = '0.06';
 
 our @NAME_PREFIXES = qw(de di du da le la van von der den des ten ter);
 
@@ -670,7 +670,9 @@ sub getNameAbbreviations {
 }
 
 sub reverseName {
-    my @n = split(/,\s*/,shift());
+    my $n = shift();
+    return undef unless defined($n);
+    my @n = split(/,\s*/,$n);
     return "$n[1] $n[0]";
 }
 
@@ -685,7 +687,8 @@ sub composeName {
 sub normalizeNameWhitespace {
 
     my $in = shift;
-
+    
+    return undef unless defined $in;
     #print "in: $in\n";
     # this used to be optional, but then we never know in advance
     #my $initialsCanBeLowerCase = shift;
@@ -712,6 +715,7 @@ sub normalizeNameWhitespace {
 sub parseName {
  	my $in = shift;
 
+    return undef unless defined $in;
  	#print "-->parseName in: $in\n";
     
     $in =~ s/^\s*and\s+//; 
@@ -777,6 +781,7 @@ sub parseNames {
 
     my $in = shift;
     my $reverse = shift; # means names are stupidly written like this: David, Bourget
+    return undef if !defined $in;
     while($in =~ s/(^|\W)(dr|prof\.? em\.?|prof|profdr|prof|sir|mrs|ms|mr)\.?(\W)/$1 $3/gi) {}
     $in =~ s/^\s+//;
     $in =~ s/([^A-Z]{2,2})\.\s*/$1/; # remove . at the end
@@ -827,9 +832,9 @@ sub parseNames {
                 return parseNameList(split(/$SEMI_AND/i,$in),$reverse);
             } 
 
-            # if there is no comma after, it's not-reversed, comma separated.  
             else {
-                return parseNameList(split(/$COMMA_AND/i,$in),$reverse);
+                my @parts = split(/$COMMA_AND/i,$in);
+                return parseNameList(@parts,$reverse);
             }
 
         } else {
@@ -890,7 +895,23 @@ sub parseNameList {
         $reverse = 1;
 
     }
-    foreach my $a (@_) {
+    # first we correct for overly split names like 'Bourget; D; John Doe'
+    my @new;
+    #print Dumper(\@_); use Data::Dumper;
+    for (@_) {
+        # if the part looks like an initial, we add it to the previous name part
+        next unless $_;
+        if (/^([A-Z](\.|\s|$)\s?)+$/ and $#new > -1) {
+            if ($new[-1] =~ /,/) {
+                $new[-1] = "$new[-1] $_";
+            } else {
+                $new[-1] = "$new[-1], $_";
+            }
+        } else {
+            push @new, $_;
+        }
+    }
+    foreach my $a (@new) {
         next unless $a;
         my ($f,$l) = parseName($a);
         push @auths, ($reverse ? "$f, $l" : "$l, $f");
@@ -934,6 +955,7 @@ sub abbreviationOf {
 # if the two names passed as params are such that they could belong to the same person, returns a merged name
 sub samePerson {
  	my ($a,$b) = @_; #name1,name2
+    return undef if !defined($a) or !defined($b);
 	my $a_expd = 0;
 	my $b_expd = 0;
 	my ($lasta,$firsta) = split(',',cleanName($a,' ','reparse'));
@@ -1032,6 +1054,8 @@ sub cleanName {
 	my ($n, $space, $reparse) = @_;
 
     # Some of the cleaning-up here is redundant because also in parseName, which is called last. But it doesn't hurt.. If it works don't try and fix it.
+
+    return undef unless defined $n;
 
     #print "Cleaning name: $n\n";
 
@@ -1179,7 +1203,10 @@ sub capitalize {
     my $txt = shift;
     my %args = @_; 
     #print "bef: $txt\n";
-    my $t = capitalize_title($txt, PRESERVE_ANYCAPS=>1);
+    # we don't want to recapitalize when it look ok
+    # what doesn't look ok is a token with all lowercase (4 or more chars) or allcaps (2 or more chars)
+    return $txt unless $txt =~ /\b[A-Z]{2,}\b/ or $txt =~ /\b[a-z]{4,}\b/;
+    my $t = capitalize_title($txt);
     if ($args{notSentence}) {
         $t =~ s/^($PREFIXES)/lc $1/ie;
     }
@@ -1223,9 +1250,11 @@ Lastname(s) [Jr], Given name(s)
 
 Some examples:
 
-Bourget, David Joseph Richard
-Bourget Jr, David
-Bourget, D. J. R.
+1) Bourget, David Joseph Richard
+
+2) Bourget Jr, David
+
+3) Bourget, D. J. R.
 
 These are all normalized names. This format is what is referred to as the normalized representation of a name here. 
 
@@ -1233,7 +1262,7 @@ These are all normalized names. This format is what is referred to as the normal
 
 =head2 parseNames(string names): array
 
-Takes a string of names as parameters and returns an array of normalized representations of the names in the string. This routines understands a wide variety of formattings for names and lists of names typically found as list of authors in bibliographic citations. See the test 03-parseNames.t for multiple examples.
+Takes a string of names as parameter and returns an array of normalized representations of the names in the string. This routine understands a wide variety of formattings for names and lists of names typically found as list of authors in bibliographic citations. See the test 03-parseNames.t for multiple examples.
 
 =head2 parseNameList(array names): array
 
@@ -1241,7 +1270,7 @@ Takes an array of names (as strings) and returns an array of normalized represen
 
 =head2 parseName(string name): array
 
-Takes a name in one of the multiple formats that one can write a name in, and returns it as an array representing the post-comma and pre-comma parts of its normalized form (yes, in that order). For example, parseName("David Bourget") returns ('David','Bourget').
+Takes a name in one of the multiple formats that one can write a name in, and returns it as an array representing the post-comma and pre-comma parts of its normalized form (in that order). For example, parseName("David Bourget") returns ('David','Bourget').
 
 =head2 cleanName(string name): string
 
@@ -1257,11 +1286,11 @@ Returns true iff name1 is a common abbreviation of name2 in English. For example
 
 =head2 setAbbreviations(array): undef
 
-Sets the abbreviation mapping used to determine whether, say, 'David' and 'Dave' are compatible name parts. The mapping is also use by abbreviationOf(). The format of the array should be: 'Dave', 'David', 'Davy', 'David', etc, otherwise representable in Perl as 'Dave' => 'David', 'Davy' => 'David', etc.
+Sets the abbreviation mapping used to determine whether, say, 'David' and 'Dave' are compatible name parts. The mapping is also used by abbreviationOf(). The format of the array should be: 'Dave', 'David', 'Davy', 'David', etc, otherwise representable in Perl as 'Dave' => 'David', 'Davy' => 'David', etc.
 
 =head2 weakenings(string name): array
 
-Returns an array of normalizations names which are weakenings of the name passed as argument. Substituting a given names by an initial, or removing an initial, for example, are operations which generate weakenings of a name. Such operations are applied with arbitrary depth, until the name has been reduced to a single initial followed by the lastname, and all intermediary steps returned. 
+Returns an array of normalized names which are weakenings of the name passed as argument. Substituting a given names by an initial, or removing an initial, for example, are operations which generate weakenings of a name. Such operations are applied with arbitrary depth, until the name has been reduced to a single initial followed by the lastname, and all intermediary steps returned. 
 
 =head2 samePerson(string name1, string name2): string
 

@@ -4,6 +4,8 @@ use 5.010001;
 use strict;
 use warnings;
 use Text::Capitalize qw(capitalize_title @exceptions);
+use Text::LevenshteinXS qw(distance);
+use Unicode::Normalize;
 
 require Exporter;
 
@@ -41,7 +43,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = ();
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 our @NAME_PREFIXES = qw(de di du da le la van von der den des ten ter);
 
@@ -963,7 +965,7 @@ sub samePerson {
 	#print "here '$lasta'-'$lastb'\n";
     $lasta =~ s/\s+Jr\.?$//;
     $lastb =~ s/\s+Jr\.?$//;
-	return undef unless lc $lasta eq lc $lastb;
+	return undef unless equivtext($lasta,$lastb);
 =old
 	# regimentation
 	$firsta =~ s/\./ /g;
@@ -998,10 +1000,10 @@ sub samePerson {
 			return cleanName($merged,'');
 		}
 		# if different tokens 
-		if ($at[$i] ne $bt[$i]) {
+		if (!equivtext($at[$i],$bt[$i])) {
 
 			# if different first letters, not compat
-			return undef if (lc substr($at[$i],0,1) ne lc substr($bt[$i],0,1));
+			return undef if !equivtext(substr($at[$i],0,1),substr($bt[$i],0,1));
 
 			# otherwise they might be compatible 
 			
@@ -1042,6 +1044,17 @@ sub samePerson {
 #	print "merged: $merged\n";
 	return cleanName($merged,'');
    
+}
+
+sub equivtext {
+    my ($a,$b) = @_;
+    $a = lc rmDiacritics($a); 
+    $b = lc rmDiacritics($b);
+    $a =~ s/\.\s*$//;
+    $b =~ s/\.\s*$//;
+    #warn "$a == $b == " . distance($a,$b);
+    # we allow one character difference, except for initial tokens. this is because some diacritics change the underlying letter when removed, e.g. Björklund -> Bjarklund, even though one might naturally write 'Bjorklund'
+    return (length($a) > 1 && length($b) > 1) ? distance($a,$b) <= 1 : $a eq $b;
 }
 
 sub cleanParseName {
@@ -1198,6 +1211,70 @@ sub rmTags {
     while ($in =~ s/(<|(?:\&lt;))\/?[^>]*?(>|(?:\&gt;))/ /g) {};
     return $in;
 }
+
+sub rmDiacritics {
+    my $str = shift;
+    my $nstr = ''; 
+    for ( $str ) {  # the variable we work on
+    ##  convert to Unicode first
+    ##  if your data comes in Latin-1, then uncomment:
+    #$_ = Encode::decode( 'iso-8859-1', $_ );  
+    $_ = NFD( $_ );   ##  decompose
+    s/\pM//g;         ##  strip combining characters
+    s/[^\0-\x80]//g;  ##  clear everything else
+    $nstr .= $_;
+    }
+    $nstr;
+}
+
+sub rmDiacriticsNOTGOOD {
+
+    my $str = shift;
+    my $nstr = '';
+
+    #
+    # This code (c) Ivan Kurmanov, http://ahinea.com/en/tech/accented-translate.html
+    #
+
+    for ( $str ) {  # the variable we work on
+
+        ##  convert to Unicode first
+        ##  if your data comes in Latin-1, then uncomment:
+        #$_ = Encode::decode( 'iso-8859-1', $_ );  
+
+        s/\xe4/ae/g;  ##  treat characters Ã¤ Ã± Ã¶ Ã¼ Ã¿
+        s/\xf1/ny/g;  ##  this was wrong in previous version of this doc    
+        s/\xf6/oe/g;
+        s/\xfc/ue/g;
+        s/\xff/yu/g;
+
+        $_ = NFD( $_ );   ##  decompose (Unicode Normalization Form D)
+        s/\pM//g;         ##  strip combining characters
+
+        # additional normalizations:
+
+        s/\x{00df}/ss/g;  ##  German beta â<80><9c>Ã<9f>â<80><9d> -> â<80><9c>ssâ<80><9d>
+        s/\x{00c6}/AE/g;  ##  Ã<86>
+        s/\x{00e6}/ae/g;  ##  Ã¦
+        s/\x{0132}/IJ/g;  ##  Ä²
+        s/\x{0133}/ij/g;  ##  Ä³
+        s/\x{0152}/Oe/g;  ##  Å<92>
+        s/\x{0153}/oe/g;  ##  Å<93>
+
+        tr/\x{00d0}\x{0110}\x{00f0}\x{0111}\x{0126}\x{0127}/DDddHh/; # Ã<90>Ä<90>Ã°Ä<91>Ä¦Ä§
+        tr/\x{0131}\x{0138}\x{013f}\x{0141}\x{0140}\x{0142}/ikLLll/; # Ä±Ä¸Ä¿Å<81>Å<80>Å<82>
+        tr/\x{014a}\x{0149}\x{014b}\x{00d8}\x{00f8}\x{017f}/NnnOos/; # Å<8a>Å<89>Å<8b>Ã<98>Ã¸Å¿
+        tr/\x{00de}\x{0166}\x{00fe}\x{0167}/TTtt/;                   # Ã<9e>Å¦Ã¾Å§
+
+        s/[^\0-\x80]/ /g;  ##  space for everything else; optional
+
+        $nstr .= $_;
+    }
+
+    $nstr;
+
+}
+
 
 sub capitalize {
     my $txt = shift;

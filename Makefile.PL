@@ -7,6 +7,7 @@ WriteMakefile(
     VERSION_FROM      => 'lib/Text/Names.pm', # finds $VERSION
     PREREQ_PM         => {
         'Text::Capitalize' => 1.1,
+        'Text::LevenshteinXS' => 0.03,
         'Test::More' => 0.96
     }, # e.g., Module::Name => 1.1
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005

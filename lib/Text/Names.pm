@@ -38,7 +38,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = ();
 
-our $VERSION = '0.19';
+our $VERSION = '0.20';
 
 
 #
@@ -973,6 +973,8 @@ sub parseName2 {
     my $in = shift;
     my ($i,$s);
     my ($l,$f) = split(/,\s*/,$in);
+    $f ||= '';
+    $l ||= '';
     # get suffix
     if ($l =~ s/\s+(Jr\.?|[IV]{2,10})\s*$//) {
         $s = $1;

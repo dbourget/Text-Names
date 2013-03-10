@@ -7,4 +7,7 @@ Revision history for Perl extension Text::Names.
     - Fixed dependency issues
 0.03  Feb 8, 2011
     - Improved doc
-
+0.19  --?
+    - Tons of improvements
+0.20  March 11 2013
+    - Removed annoying uninitialized variable warnings

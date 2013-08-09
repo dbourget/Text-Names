@@ -1,5 +1,5 @@
 use Test::More;
-use Text::Names qw/isCommonSurname isCommonFirstname/; 
+use Text::Names qw/isCommonSurname isCommonFirstname guessGender/; 
 
 ok(isCommonSurname('Smith'),'No threshold test, positive');
 ok(isCommonSurname('Kennedy'),'No threshold test, positive');
@@ -12,5 +12,9 @@ ok(!isCommonFirstname('Aklajldkfsjfd'),'Firstname no threshold test, negative');
 ok(isCommonFirstname('Mary',0.5),'Firstname threshold test, positive');
 ok(isCommonFirstname('John',1),'Firstname threshold test, positive');
 ok(!isCommonFirstname('Mark',3),'Firstname threshold test, negative');
+ok(guessGender('David') == 'M');
+ok(guessGender('lkjasdf') == undef);
+ok(guessGender('Mary') == 'F');
+ok(guessGender('Arthur') == 'M');
 
 done_testing;

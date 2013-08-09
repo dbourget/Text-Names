@@ -32,13 +32,14 @@ our %EXPORT_TAGS = ( 'all' => [ qw(
     getNameAbbreviations
     isCommonSurname
     isCommonFirstname
+    guessGender
 ) ] );
 
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = ();
 
-our $VERSION = '0.20';
+our $VERSION = '0.30';
 
 
 #
@@ -701,6 +702,22 @@ sub isCommonFirstname {
     prepareCommonNames() unless $namesInitialized; 
     return 1 if exists $commonMaleFirstnames{$name} and $commonMaleFirstnames{$name} >= $percentLimit or
                 exists $commonFemaleFirstnames{$name} and $commonFemaleFirstnames{$name} >= $percentLimit;
+    return 0;
+}
+
+sub guessGender {
+    my ($name) = @_;
+    $name = uc $name;
+    prepareCommonNames() unless $namesInitialized; 
+    return undef if !(exists $commonFemaleFirstnames{$name} or exists $commonMaleFirstnames{$name});
+
+    return 'F' if exists $commonFemaleFirstnames{$name} and (! exists $commonMaleFirstnames{$name});
+    return 'M' if exists $commonMaleFirstnames{$name} and (! exists $commonFemaleFirstnames{$name});
+    # now the name exist in both. we make a decision if the percentage is very different
+    # now in both
+    return 'F' if $commonFemaleFirstnames{$name} / $commonMaleFirstnames{$name} >= 5;
+    return 'M' if $commonMaleFirstnames{$name} / $commonFemaleFirstnames{$name} >= 5;
+    return undef;
 }
 
 sub prepareCommonNames {

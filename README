@@ -1,4 +1,4 @@
-Text-Names version 0.08
+Text-Names 
 =======================
 
 A Perl extension for name parsing and normalization. See POD for details.
@@ -20,7 +20,7 @@ This module requires these other modules and libraries:
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2011 by David Bourget
+Copyright (C) 2011-2013 by David Bourget
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.10.1 or,

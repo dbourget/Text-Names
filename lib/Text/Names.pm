@@ -7872,7 +7872,7 @@ __END__
 
 =head1 NAME
 
-Text::Names - Perl extension for name parsing and normalization
+Text::Names - Perl extension for proper name parsing, normalization, recognition, and classification
 
 =head1 SYNOPSIS
 
@@ -7885,6 +7885,11 @@ Text::Names - Perl extension for name parsing and normalization
     print "same!" if samePerson("Dave Bourget","David F. Bourget");
 
     # same!
+
+    print guessGender("David");
+
+    # "M"
+
 
 =head1 DESCRIPTION
 

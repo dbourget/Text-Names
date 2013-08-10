@@ -715,8 +715,8 @@ sub guessGender {
     return 'M' if exists $commonMaleFirstnames{$name} and (! exists $commonFemaleFirstnames{$name});
     # now the name exist in both. we make a decision if the percentage is very different
     # now in both
-    return 'F' if $commonFemaleFirstnames{$name} / $commonMaleFirstnames{$name} >= 5;
-    return 'M' if $commonMaleFirstnames{$name} / $commonFemaleFirstnames{$name} >= 5;
+    return 'F' if $commonFemaleFirstnames{$name} / $commonMaleFirstnames{$name} >= 50;
+    return 'M' if $commonMaleFirstnames{$name} / $commonFemaleFirstnames{$name} >= 50;
     return undef;
 }
 

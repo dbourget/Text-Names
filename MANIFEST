@@ -6,3 +6,4 @@ README
 t/01-abbreviations.t
 t/02-samePerson.t
 t/03-parseNames.t
+t/04-common.t

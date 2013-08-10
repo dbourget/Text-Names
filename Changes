@@ -13,3 +13,5 @@ Revision history for Perl extension Text::Names.
     - Removed annoying uninitialized variable warnings
 0.30 August 2013
     - Added guessGender subroutine
+0.31-32 August 2013
+    - Tweaks to guessGender subroutine, documentation

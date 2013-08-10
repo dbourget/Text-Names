@@ -39,7 +39,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = ();
 
-our $VERSION = '0.31';
+our $VERSION = '0.32';
 
 
 #
@@ -7969,8 +7969,9 @@ Sets the abbreviation mapping used to determine whether, say, 'David' and 'Dave'
 
 Returns an array of normalized names which are weakenings of the name passed as argument. Substituting a given names by an initial, or removing an initial, for example, are operations which generate weakenings of a name. Such operations are applied with arbitrary depth, until the name has been reduced to a single initial followed by the lastname, and all intermediary steps returned. 
 
+=head2 guessGender(string firstname, [float threshold]): string
 
-
+Returns 'F' if someone with the provided firstname is likely female, 'M' if likely male, and undef otherwise. A frequency threshold (default = 0) can be specified so that a gender is returned only if the name is found with at least this frequency among people with this gender (according to the US census). A threshold of 0.1 (which means 0.1%) ensures very reliable results (precision above 99%) with a recall of about 60%. When the threshold is lower, this function has a tendency to overestimate the number of females.
 
 =head1 EXPORT
 
@@ -7992,7 +7993,7 @@ David Bourget, http://www.dbourget.com, with contributions by Zbigniew Lukasiak
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2011 by David Bourget and University of London
+Copyright (C) 2011-2013 by David Bourget and University of London
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.10.1 or,

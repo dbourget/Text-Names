@@ -13,4 +13,13 @@ WriteMakefile(
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM  => 'lib/Text/Names.pm', # retrieve abstract from module
        AUTHOR         => 'David Bourget') : ()),
+    ($ExtUtils::MakeMaker::VERSION < 6.46
+      ? ()
+      : ( META_MERGE  => {
+              resources => {
+                  repository => 'https://github.com/dbourget/Text-Names',
+              },
+          },
+        )
+    ), 
 );

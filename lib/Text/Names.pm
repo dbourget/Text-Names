@@ -39,7 +39,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = ();
 
-our $VERSION = '0.33';
+our $VERSION = '0.34';
 
 
 #
@@ -1188,7 +1188,8 @@ sub cleanName {
     if ($l =~ /[a-z]/ and length($f) <=3) {
         $f =~ s/([A-Z])([A-Z])/$1.$2/g;
         $f =~ s/([A-Z])([A-Z])/$1.$2/g;
-        
+        $f .= "." unless $f =~ /\.\s*$/;
+        $f =~ s/\.([A-Z])/\. $1/g;
     }
     #warn "$l, $f";
     $n = composeName($f,$l);

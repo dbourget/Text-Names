@@ -36,6 +36,7 @@ my %tests = (
     cleanName("CL Adams") => "Adams, C. L.",
     cleanName("Hacker, PMS") => "Hacker, P. M. S."
 );
+is(cleanName("Hacker, PMS"),"Hacker, P. M. S.");
 #print cleanName("Guilherme Gusmão da Silva");
 foreach my $t (keys %tests) {
 	my $r = join('; ',parseNames($t));

@@ -17,3 +17,5 @@ Revision history for Perl module Text::Names
     - Tweaks to guessGender subroutine
 0.32  2013-08-10
     - Documentation
+0.33  2013-08-10
+    - Fixed Changes file

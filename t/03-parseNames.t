@@ -1,4 +1,4 @@
-use Text::Names 'parseNames','cleanName';
+use Text::Names 'parseNames','cleanName','composeName','parseName';
 use Test::More;
 use utf8;
 binmode(STDOUT,":utf8");
@@ -33,6 +33,8 @@ my %tests = (
     cleanName("van Untouched, Firstname") => "van Untouched, Firstname",
     cleanName("Van Untouched, Firstname") => "Van Untouched, Firstname",
     cleanName("VAN TOUCHED, firstname") => "van Touched, Firstname",
+    cleanName("CL Adams") => "Adams, C. L.",
+    cleanName("Hacker, PMS") => "Hacker, P. M. S."
 );
 #print cleanName("Guilherme Gusmão da Silva");
 foreach my $t (keys %tests) {

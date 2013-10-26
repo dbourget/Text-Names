@@ -39,7 +39,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = ();
 
-our $VERSION = '0.32';
+our $VERSION = '0.33';
 
 
 #
@@ -1182,7 +1182,16 @@ sub cleanName {
         $n = capitalize($n,notSentence=>1);#_title($n, PRESERVE_ANYCAPS=>1, NOT_CAPITALIZED=>\@PREFIXES);	
     }
 
-    $n = composeName(parseName($n));
+    my ($f,$l) = parseName($n);
+
+    #unless it's all caps, the caps are initials
+    if ($l =~ /[a-z]/ and length($f) <=3) {
+        $f =~ s/([A-Z])([A-Z])/$1.$2/g;
+        $f =~ s/([A-Z])([A-Z])/$1.$2/g;
+        
+    }
+    #warn "$l, $f";
+    $n = composeName($f,$l);
     # now final capitalization
     $n = capitalize($n,notSentence=>1); #,PRESERVE_ANYCAPS=>1, NOT_CAPITALIZED=>\@PREFIXES);	
     return $n;

@@ -821,6 +821,8 @@ sub parseName {
         if ($#bits == -1) {
             return ($in,"");
         }
+ #we use to put all parts of a name in the given names part. be to put more in the surname part
+
         my $lastname = splice(@bits,-1,1);
         if ($lastname =~ /^Jr\.?$/i and $#bits > -1) {
             $lastname = $bits[-1] . " $lastname";
@@ -840,6 +842,14 @@ sub parseName {
 		#}
 		#my $lastname = join(' ', @bits);
 		#return ($firstname, join(' ',@bits));
+=tmp
+        my @surnames;
+        while ($#bits > 0 and $bits[-1] =~ /^(Jr\.?|ii|iii|iv|v)$/i) {
+            @surnames = pop @bits; 
+        }
+        my $surname = pop @bits;
+        return (join(' ',@bits,), join(' ',@surnames));
+=cut
  	}
 
 }
@@ -1188,8 +1198,8 @@ sub cleanName {
     if ($l =~ /[a-z]/ and length($f) <=3) {
         $f =~ s/([A-Z])([A-Z])/$1.$2/g;
         $f =~ s/([A-Z])([A-Z])/$1.$2/g;
-        $f .= "." unless $f =~ /\.\s*$/;
         $f =~ s/\.([A-Z])/\. $1/g;
+        $f =~ s/([A-Z])$/$1./;
     }
     #warn "$l, $f";
     $n = composeName($f,$l);

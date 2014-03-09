@@ -7,6 +7,7 @@ use Text::Capitalize qw(capitalize_title @exceptions);
 use Text::LevenshteinXS qw(distance);
 use Unicode::Normalize;
 
+
 require Exporter;
 
 our @ISA = qw(Exporter);
@@ -39,7 +40,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = ();
 
-our $VERSION = '0.34';
+our $VERSION = '0.39';
 
 
 #
@@ -795,9 +796,9 @@ sub parseName {
     #print "name cleaned:'$in'\n";
 
     # check if we have a case of Lastname I. without comma
-    if ($in=~ /^([^,]+?\s)+?((?:[A-Z][\-\.\s]{0,2}){1,3})$/) {
+    if ($in !~ /,/ and $in=~ /^(.*?\s)((?:[A-Z][\-\.\s]{0,2}){1,3})$/) {
         
-        #warn "Got a reversed name without comma";
+        #warn "Got a reversed name without comma: $1, $2";
         my $init = $2;
         my $rest = $1;
         #print "\n\nmatched, rest:$rest--$2\n";
@@ -818,11 +819,10 @@ sub parseName {
     	return ($2, $1);
  	} else {
 	 	my @bits = split(' ',$in);
+        #print join(" - ", @bits);
         if ($#bits == -1) {
             return ($in,"");
         }
- #we use to put all parts of a name in the given names part. be to put more in the surname part
-
         my $lastname = splice(@bits,-1,1);
         if ($lastname =~ /^Jr\.?$/i and $#bits > -1) {
             $lastname = $bits[-1] . " $lastname";
@@ -842,13 +842,15 @@ sub parseName {
 		#}
 		#my $lastname = join(' ', @bits);
 		#return ($firstname, join(' ',@bits));
-=tmp
-        my @surnames;
-        while ($#bits > 0 and $bits[-1] =~ /^(Jr\.?|ii|iii|iv|v)$/i) {
-            @surnames = pop @bits; 
-        }
-        my $surname = pop @bits;
-        return (join(' ',@bits,), join(' ',@surnames));
+=crap
+        my @surnames = $#bits > 1 ? @bits[1,$#bits] : ($bits[1]);
+
+        #warn "doing " . join(" ",@bits);
+        #while ($#bits > 0) {
+        #    @surnames = pop @bits; 
+        #}
+        #my $surname = pop @bits;
+        return ($bits[0], join(' ',@surnames));
 =cut
  	}
 
@@ -1192,20 +1194,28 @@ sub cleanName {
         $n = capitalize($n,notSentence=>1);#_title($n, PRESERVE_ANYCAPS=>1, NOT_CAPITALIZED=>\@PREFIXES);	
     }
 
+    #warn "$n";
+    #unless it's all caps, the caps are initials. we unstuck them and add .
+    if ($n =~ /[a-z]/ and $n !~ /[A-Z]{2, } [A-Z]{2,}/) {
+        $n =~ s/(\s|^)([A-Z]{1,3})(\s|$)/$1 . toInitials($2) . $3/ge;
+    }
+
     my ($f,$l) = parseName($n);
 
-    #unless it's all caps, the caps are initials
-    if ($l =~ /[a-z]/ and length($f) <=3) {
-        $f =~ s/([A-Z])([A-Z])/$1.$2/g;
-        $f =~ s/([A-Z])([A-Z])/$1.$2/g;
-        $f =~ s/\.([A-Z])/\. $1/g;
-        $f =~ s/([A-Z])$/$1./;
-    }
+    #warn "** $l, $f";
     #warn "$l, $f";
     $n = composeName($f,$l);
     # now final capitalization
     $n = capitalize($n,notSentence=>1); #,PRESERVE_ANYCAPS=>1, NOT_CAPITALIZED=>\@PREFIXES);	
     return $n;
+}
+
+sub toInitials {
+    my $s = shift;
+    return $s if grep { lc $_ eq lc $s } @NAME_PREFIXES;
+    $s =~ s/([A-Z])/$1. /g;
+    return $s;
+
 }
 
 sub weakenings {

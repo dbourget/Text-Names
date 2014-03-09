@@ -2,6 +2,9 @@ use Text::Names 'parseNames','cleanName','composeName','parseName';
 use Test::More;
 use utf8;
 binmode(STDOUT,":utf8");
+
+#is(cleanName("van fraassen b c"),"Van Fraassen, B. C.");
+
 my %tests = (
     'Kuehni, R. G., Hardin, C. L.' => 'Kuehni, R. G.; Hardin, C. L.',
 	'Bourget, David; Doe, John' => 'Bourget, David; Doe, John',	
@@ -34,7 +37,9 @@ my %tests = (
     cleanName("Van Untouched, Firstname") => "Van Untouched, Firstname",
     cleanName("VAN TOUCHED, firstname") => "van Touched, Firstname",
     cleanName("CL Adams") => "Adams, C. L.",
-    cleanName("Hacker, PMS") => "Hacker, P. M. S."
+    cleanName("Hacker, PMS") => "Hacker, P. M. S.",
+    cleanName("van fraassen b") => "van Fraassen, B.",
+    cleanName("van fraassen b c") => "van Fraassen, B. C."
 );
 is(cleanName("Hacker, PMS"),"Hacker, P. M. S.");
 is(cleanName("Doe, Bob"),"Doe, Bob");

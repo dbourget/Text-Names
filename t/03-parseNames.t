@@ -3,7 +3,14 @@ use Test::More;
 use utf8;
 binmode(STDOUT,":utf8");
 
-#is(cleanName("van fraassen b c"),"Van Fraassen, B. C.");
+is(cleanName("T.H. Ho"),"Ho, T. H.");
+is(cleanName("Ho, T. . ."),"Ho, T.");
+is(cleanName("D.'Arms, D."), "D'Arms, D.");
+is(cleanName("D.’Arms, D."), "D'Arms, D.");
+is(cleanName("D’Arms, D."), "D’Arms, D.");
+my ($f,$l) = parseName("D’Arms, D.");
+is($l,"D’Arms");
+
 
 my %tests = (
     'Kuehni, R. G., Hardin, C. L.' => 'Kuehni, R. G.; Hardin, C. L.',
@@ -39,7 +46,13 @@ my %tests = (
     cleanName("CL Adams") => "Adams, C. L.",
     cleanName("Hacker, PMS") => "Hacker, P. M. S.",
     cleanName("van fraassen b") => "van Fraassen, B.",
-    cleanName("van fraassen b c") => "van Fraassen, B. C."
+    cleanName("van fraassen b c") => "van Fraassen, B. C.",
+    cleanName("RawlsJ.") => "Rawls, J.",
+    cleanName("RawlsJ.C.") => "Rawls, J. C.",
+    cleanName("RawlsJC") => "Rawls, J. C.",
+    cleanName("McKim, John") => "McKim, John",
+    cleanName("John McKim") => "McKim, John",
+    cleanName("McKim") => "McKim, "
 );
 is(cleanName("Hacker, PMS"),"Hacker, P. M. S.");
 is(cleanName("Doe, Bob"),"Doe, Bob");

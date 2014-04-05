@@ -21,3 +21,5 @@ Revision history for Perl module Text::Names
     - Fixed Changes file
 0.39  2014-03-09
    - Fixed issues with reversed names without commas
+0.40  2014-04-05
+   - Fixed issues with O'* names

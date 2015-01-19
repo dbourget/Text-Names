@@ -23,3 +23,5 @@ Revision history for Perl module Text::Names
    - Fixed issues with reversed names without commas
 0.40  2014-04-05
    - Fixed issues with O'* names
+0.41  2011-01-05
+   - Added firstnamePrevalence() and surnamePrevalence()

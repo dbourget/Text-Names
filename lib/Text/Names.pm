@@ -35,13 +35,15 @@ our %EXPORT_TAGS = ( 'all' => [ qw(
     isCommonSurname
     isCommonFirstname
     guessGender
+    firstnamePrevalence
+    surnamePrevalence
 ) ] );
 
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = ();
 
-our $VERSION = '0.40';
+our $VERSION = '0.41';
 
 
 #
@@ -691,23 +693,28 @@ my $COMMON_SURNAMES;
 my $COMMON_MALE_FIRSTNAMES;
 my $COMMON_FEMALE_FIRSTNAMES;
 
-sub isCommonSurname {
-    my ($name, $percentLimit) = @_;
-    $percentLimit ||= 0;
-    $name = uc $name;
+sub firstnamePrevalence {
+    my $name = uc shift;
     prepareCommonNames() unless $namesInitialized; 
-    return 1 if exists $commonSurnames{$name}  and  $commonSurnames{$name} >= $percentLimit ;
+    return (($commonMaleFirstnames{$name} || 0) + ($commonFemaleFirstnames{$name} || 0))/2;
+}
+sub surnamePrevalence {
+    my $name = uc shift;
+    prepareCommonNames() unless $namesInitialized; 
+    return $commonSurnames{$name} || 0;
 }
 
 sub isCommonFirstname {
     my ($name, $percentLimit) = @_;
     $percentLimit ||= 0;
-    $name = uc $name;
-    prepareCommonNames() unless $namesInitialized; 
-    return 1 if exists $commonMaleFirstnames{$name} and $commonMaleFirstnames{$name} >= $percentLimit or
-                exists $commonFemaleFirstnames{$name} and $commonFemaleFirstnames{$name} >= $percentLimit;
-    return 0;
+    return firstnamePrevalence($name) > $percentLimit;
 }
+sub isCommonSurname {
+    my ($name, $percentLimit) = @_;
+    $percentLimit ||= 0;
+    return surnamePrevalence($name) > $percentLimit;
+}
+
 
 sub guessGender {
     my ($name) = @_;
@@ -7982,6 +7989,14 @@ Returns true if the name is among the 1000 most popular firstnames (male or fema
 =head2 isCommonSurname(string name, [float threshold]): boolean
 
 Returns true if the name is among the 1000 most popular surnames according to the 1990 US Census. If a threshold percentage is passed, the name must have at least this frequency for the subroutine to return true. See http://www.census.gov/genealogy/www/data/1990surnames/names_files.html.
+
+=head2 firstnamePrevalence(string name): float [0-100]
+
+Returns a float between 0 and 100 indicating how common the firstname is according to the 1990 US Census. Names that are not in the top 1000 return 0.
+
+=head2 surnamePrevalence(string name): float [0-100]
+
+Returns a float between 0 and 100 indicating how common the surname is according to the 1990 US Census. Names that are not in the top 1000 return 0.
 
 =head2 normalizeNameWhitespace(string name): string
 

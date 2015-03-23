@@ -8037,9 +8037,11 @@ Sets the abbreviation mapping used to determine whether, say, 'David' and 'Dave'
 
 Returns the abbreviation mapping.
 
-=head2 weakenings(string name): array
+=head2 weakenings(string first_name, string last_name): array
 
-Returns an array of normalized names which are weakenings of the name passed as argument. Substituting a given names by an initial, or removing an initial, for example, are operations which generate weakenings of a name. Such operations are applied with arbitrary depth, until the name has been reduced to a single initial followed by the lastname, and all intermediary steps returned. 
+Returns an array of normalized names which are weakenings of the first and last name passed as argument. Substituting a given names by an initial, or removing an initial, for example, are operations which generate weakenings of a name. Such operations are applied with arbitrary depth, until the name has been reduced to a single initial followed by the lastname, and all intermediary steps returned. 
+
+You can use weakenings(parseName("Lastname, Firstname")) to weaken a first and last name as a single string.
 
 =head2 guessGender(string firstname, [float threshold]): string
 

@@ -8029,9 +8029,13 @@ Returns a true value iff name1 and name2 could reasonably be two writings of the
 
 Contrary to what one might expect, this subroutine does not use weakenings() behind the scenes. Another way to check for name compatibility would be to check that two names have a weakening in common (probably too permissive for most purposes) or that one name is a weakening of the other.
 
-=head2 setAbbreviations(array): undef
+=head2 setNameAbbreviations(array): undef
 
 Sets the abbreviation mapping used to determine whether, say, 'David' and 'Dave' are compatible name parts. The mapping is also used by abbreviationOf(). The format of the array should be: 'Dave', 'David', 'Davy', 'David', etc, otherwise representable in Perl as 'Dave' => 'David', 'Davy' => 'David', etc.
+
+=head2 getNameAbbreviations
+
+Returns the abbreviation mapping.
 
 =head2 weakenings(string name): array
 

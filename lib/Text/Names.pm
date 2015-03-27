@@ -488,6 +488,7 @@ our @ABBREVIATIONS = (
 'Pete' => 'Peter',
 'Phelia' => 'Orphelia',
 'Phil' => 'Philip',
+'Phil' => 'Phillip',
 'Polly' => 'Mary',
 'Polly' => 'Paula',
 'Prissy' => 'Priscilla',

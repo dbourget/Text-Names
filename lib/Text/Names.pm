@@ -8029,13 +8029,19 @@ Returns a true value iff name1 and name2 could reasonably be two writings of the
 
 Contrary to what one might expect, this subroutine does not use weakenings() behind the scenes. Another way to check for name compatibility would be to check that two names have a weakening in common (probably too permissive for most purposes) or that one name is a weakening of the other.
 
-=head2 setAbbreviations(array): undef
+=head2 setNameAbbreviations(array): undef
 
 Sets the abbreviation mapping used to determine whether, say, 'David' and 'Dave' are compatible name parts. The mapping is also used by abbreviationOf(). The format of the array should be: 'Dave', 'David', 'Davy', 'David', etc, otherwise representable in Perl as 'Dave' => 'David', 'Davy' => 'David', etc.
 
-=head2 weakenings(string name): array
+=head2 getNameAbbreviations
 
-Returns an array of normalized names which are weakenings of the name passed as argument. Substituting a given names by an initial, or removing an initial, for example, are operations which generate weakenings of a name. Such operations are applied with arbitrary depth, until the name has been reduced to a single initial followed by the lastname, and all intermediary steps returned. 
+Returns the abbreviation mapping.
+
+=head2 weakenings(string first_name, string last_name): array
+
+Returns an array of normalized names which are weakenings of the first and last name passed as argument. Substituting a given names by an initial, or removing an initial, for example, are operations which generate weakenings of a name. Such operations are applied with arbitrary depth, until the name has been reduced to a single initial followed by the lastname, and all intermediary steps returned. 
+
+You can use weakenings(parseName("Lastname, Firstname")) to weaken a first and last name as a single string.
 
 =head2 guessGender(string firstname, [float threshold]): string
 

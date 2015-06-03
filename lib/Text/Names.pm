@@ -43,7 +43,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = ();
 
-our $VERSION = '0.41';
+our $VERSION = '0.42';
 
 
 #
@@ -721,6 +721,11 @@ sub guessGender {
     my ($name) = @_;
     $name = uc $name;
     prepareCommonNames() unless $namesInitialized; 
+    # extract firstname part if necessary
+    if ($name =~ /[,\s]/) {
+       my @parts = parseName($name);
+       $name = $parts[0];
+    }
     return undef if !(exists $commonFemaleFirstnames{$name} or exists $commonMaleFirstnames{$name});
 
     return 'F' if exists $commonFemaleFirstnames{$name} and (! exists $commonMaleFirstnames{$name});

@@ -16,6 +16,7 @@ ok(guessGender('David') == 'M');
 ok(guessGender('lkjasdf') == undef);
 ok(guessGender('Mary') == 'F');
 ok(guessGender('Arthur') == 'M');
+ok(guessGender('Arthur Flintstone') == 'M');
 ok(firstnamePrevalence('David') > 1);
 ok(surnamePrevalence('Smith') > 1);
 ok(firstnamePrevalence('Angela') > 0);

@@ -43,7 +43,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = ();
 
-our $VERSION = '0.42';
+our $VERSION = '0.43';
 
 
 #
@@ -717,18 +717,40 @@ sub isCommonSurname {
 }
 
 
+my $fem_ending = qr/(ette|ne|a)$/i;
+
 sub guessGender {
     my ($name) = @_;
     $name = uc $name;
     prepareCommonNames() unless $namesInitialized; 
-    return undef if !(exists $commonFemaleFirstnames{$name} or exists $commonMaleFirstnames{$name});
+    # extract firstname part if necessary
+    if ($name =~ /[,\s]/) {
+       my @parts = parseName($name);
+       $name = $parts[0];
+    }
 
-    return 'F' if exists $commonFemaleFirstnames{$name} and (! exists $commonMaleFirstnames{$name});
-    return 'M' if exists $commonMaleFirstnames{$name} and (! exists $commonFemaleFirstnames{$name});
+    my $fscore = $commonFemaleFirstnames{$name};
+    my $mscore = $commonMaleFirstnames{$name};
+    return undef if !($fscore || $mscore);
+    return 'F' if $fscore and !$mscore;
+    return 'M' if $mscore and !$fscore;
+    #warn "M: $mscore vs F: $fscore";
+
+    my $threshold = 20;
+
     # now the name exist in both. we make a decision if the percentage is very different
     # now in both
-    return 'F' if $commonFemaleFirstnames{$name} / $commonMaleFirstnames{$name} >= 50;
-    return 'M' if $commonMaleFirstnames{$name} / $commonFemaleFirstnames{$name} >= 50;
+    return 'F' if $fscore / $mscore >= $threshold;
+    return 'M' if $mscore / $fscore >= $threshold;
+
+    # adjust threashold based on common female name endings
+    my $fem_end = ($name =~ $fem_ending);
+    if ($fem_end) {
+        return 'F' if $fscore / $mscore >= ($threshold/4);
+    } else {
+        return 'M' if $mscore / $fscore >= ($threshold/4);
+    }
+
     return undef;
 }
 

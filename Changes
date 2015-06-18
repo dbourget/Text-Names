@@ -27,3 +27,6 @@ Revision history for Perl module Text::Names
    - Added firstnamePrevalence() and surnamePrevalence()
 0.42  2015-04-01
    - Merged doc fixes from ugexe
+0.43  2015-05-15
+   - Make guessGender work with full names; improved guessGender recall
+ 

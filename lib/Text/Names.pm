@@ -43,7 +43,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = ();
 
-our $VERSION = '0.43';
+our $VERSION = '0.44';
 
 
 #
@@ -1069,7 +1069,7 @@ sub abbreviationOf {
 
 # if the two names passed as params are such that they could belong to the same person, returns a merged name
 sub samePerson {
- 	my ($a,$b) = @_; #name1,name2
+ 	my ($a,$b, %opts) = @_; #name1,name2
     return undef if !defined($a) or !defined($b);
 	my $a_expd = 0;
 	my $b_expd = 0;
@@ -1078,7 +1078,15 @@ sub samePerson {
 	#print "here '$lasta'-'$lastb'\n";
     $lasta =~ s/\s+Jr\.?$// if defined $lasta;
     $lastb =~ s/\s+Jr\.?$// if defined $lastb;
-	return undef unless equivtext($lasta,$lastb);
+
+    # check for reversed name if loose
+    if (!equivtext($lasta,$lastb)) {
+        if (!$opts{loose}) {
+            return undef;
+        } else {
+            return samePerson("$firsta, $lasta", "$lastb, $firstb", loose=>0);
+        }
+    }
 =old
 	# regimentation
 	$firsta =~ s/\./ /g;

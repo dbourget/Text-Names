@@ -37,6 +37,7 @@ our %EXPORT_TAGS = ( 'all' => [ qw(
     guessGender
     firstnamePrevalence
     surnamePrevalence
+    isMisparsed
 ) ] );
 
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
@@ -685,10 +686,10 @@ sub getNameAbbreviations {
     return \%ABBREVIATIONS;
 }
 
-my %commonSurnames;
-my %commonMaleFirstnames;
-my %commonFemaleFirstnames;
-my $namesInitialized = 0;
+our %commonSurnames;
+our %commonMaleFirstnames;
+our %commonFemaleFirstnames;
+our $namesInitialized = 0;
 # These three variables initialized below
 my $COMMON_SURNAMES;
 my $COMMON_MALE_FIRSTNAMES;
@@ -714,6 +715,17 @@ sub isCommonSurname {
     my ($name, $percentLimit) = @_;
     $percentLimit ||= 0;
     return surnamePrevalence($name) > $percentLimit;
+}
+
+sub isMisparsed {
+    my ($name) = @_;
+    $name = lc $name;
+    return 1 if $name !~ /\w.*,.*\w/;
+    for my $prefix (@NAME_PREFIXES) {
+        return 1 if $name =~ /\b$prefix$/;        
+    }
+    return 1 if $name =~ /^\w\b/;
+    return 0;
 }
 
 
@@ -1084,7 +1096,7 @@ sub samePerson {
         if (!$opts{loose}) {
             return undef;
         } else {
-            return samePerson("$firsta, $lasta", "$lastb, $firstb", loose=>0);
+            return samePerson("$firsta, $lasta", "$lastb, $firstb", loose=>0) || samePerson("$firsta $lasta","$firstb $lastb", loose=>0);
         }
     }
 =old

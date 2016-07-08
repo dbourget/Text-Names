@@ -52,7 +52,7 @@ our $VERSION = '0.44';
 # Search for 'CODE' (all caps) to skip ahead to the code
 #
 
-our @NAME_PREFIXES = qw(de di du da le la van von der den des ten ter y);
+our @NAME_PREFIXES = qw(de di du da le la van von der den des ten ter y e);
 
 @Text::Capitalize::exceptions = qw(
      a an the as s

@@ -1087,6 +1087,10 @@ sub samePerson {
 	my $b_expd = 0;
 	my ($lasta,$firsta) = split(',',cleanName($a,' ','reparse'));
 	my ($lastb,$firstb) = split(',',cleanName($b,' ','reparse'));
+    return undef if defined($firsta) and !defined($firstb);
+    return undef if defined($firstb) and !defined($firsta);
+    return undef if defined($lasta) and !defined($lastb);
+    return undef if defined($lastb) and !defined($lasta);
 	#print "here '$lasta'-'$lastb'\n";
     $lasta =~ s/\s+Jr\.?$// if defined $lasta;
     $lastb =~ s/\s+Jr\.?$// if defined $lastb;

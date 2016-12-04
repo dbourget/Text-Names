@@ -1,5 +1,5 @@
 use Test::More;
-use Text::Names qw/isCommonSurname isCommonFirstname guessGender firstnamePrevalence surnamePrevalence/; 
+use Text::Names qw/isCommonSurname isCommonFirstname guessGender firstnamePrevalence surnamePrevalence isLikelyMisparsed/; 
 
 ok(isCommonSurname('Smith'),'No threshold test, positive');
 ok(isCommonSurname('Kennedy'),'No threshold test, positive');
@@ -27,5 +27,9 @@ ok(firstnamePrevalence('David') > 1);
 ok(surnamePrevalence('Smith') > 1);
 ok(firstnamePrevalence('Angela') > 0);
 ok(surnamePrevalence('Bourvici') == 0);
+ok(isLikelyMisparsed('Bourget, David John Richard Bill'));
+ok(isLikelyMisparsed('Alexia, Smith'));
+ok(!isLikelyMisparsed('Bourget, David'));
+ok(isLikelyMisparsed('Bourget, David Dr'), 'Misparsed is likely misparsed');
 
 done_testing;

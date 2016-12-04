@@ -38,6 +38,7 @@ our %EXPORT_TAGS = ( 'all' => [ qw(
     firstnamePrevalence
     surnamePrevalence
     isMisparsed
+    isLikelyMisparsed
 ) ] );
 
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
@@ -721,12 +722,33 @@ sub isMisparsed {
     my ($name) = @_;
     $name = lc $name;
     return 1 if $name !~ /\w.*,.*\w/;
-    for my $prefix (@NAME_PREFIXES) {
-        return 1 if $name =~ /\b$prefix$/;        
+    for my $prefix ((@NAME_PREFIXES,'dr','dr.','prof','prof.','jr','jr.')) {
+        #warn "check prefix: $prefix";
+        return 1 if $name =~ /\b$prefix$/i;        
     }
     return 1 if $name =~ /^\w\b/;
     return 0;
 }
+
+sub isLikelyMisparsed {
+    my ($name) = @_;
+    my @parts = parseName2($name);
+    for my $p (@parts) {
+        next unless $p;
+        my @sub_parts = split(/\s+/,$p);
+        return 1 if $#sub_parts >= 2; # three or more subparts likely a mess
+    }
+    # also likely misparsed if firstname containg a likely lastname AND surname contains a likely firstname
+    my @firstname_parts = split(/\s+/, $parts[0]);
+    my @first_surname = grep { isCommonSurname($_) } @firstname_parts;
+    my @surname_parts = split(/\s/, $parts[2]);
+    my @surname_first = grep { isCommonFirstname($_) } @surname_parts;
+    return 1 if $#first_surname > -1 and $#surname_first > -1;
+    return isMisparsed($name);
+
+}
+
+
 
 
 my $fem_ending = qr/(ette|ne|a)$/i;

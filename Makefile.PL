@@ -10,6 +10,7 @@ WriteMakefile(
         'Text::LevenshteinXS' => 0.03,
         'Test::More' => 0.96
     }, # e.g., Module::Name => 1.1
+    LICENSE => 'perl_5',
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM  => 'lib/Text/Names.pm', # retrieve abstract from module
        AUTHOR         => 'David Bourget') : ()),
@@ -21,5 +22,5 @@ WriteMakefile(
               },
           },
         )
-    ), 
+    ),
 );

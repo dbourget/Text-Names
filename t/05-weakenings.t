@@ -1,4 +1,4 @@
-use Text::Names;
+use Text::Names qw(weakenings);
 use Test::More;
 use Data::Dumper;
 

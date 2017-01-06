@@ -45,7 +45,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = ();
 
-our $VERSION = '0.44';
+our $VERSION = '0.45';
 
 
 #
@@ -1268,7 +1268,7 @@ sub cleanName {
     #warn $n;
 	#$n =~ s/([\w'-])\s*,(.*)\s(van|von|von\sder|van\sder|di|de|del|du|da)(\s.*|$)/(lc $3) . $1 . "," . $2 . $4/ie;
     #warn $n;
-    # replace Iep by UNKNOWN
+    # replace Iep by UNKNOWN (for PP)
     $n =~ s/^Iep,$/Unknown, Unknown/;
     #links aren't names
     $n = "Unknown, Unknown" if $n =~ /http:\/\//;
@@ -1278,14 +1278,14 @@ sub cleanName {
         $n = capitalize($n,notSentence=>1);#_title($n, PRESERVE_ANYCAPS=>1, NOT_CAPITALIZED=>\@PREFIXES);	
     }
 
-    # do we have initials suck on the surname like so: RawlsJ. 
+    # do we have initials stuck on the surname like so: RawlsJ. 
     unless ($n =~ /,/ or $n =~ /\w \w/) {
         $n =~ s/([A-Z][a-z]{1,})((?:[A-Z](?:$|\.|\s|)\s*)+)\s*$/$1, $2/g;
     }
 
     #warn "$n";
     #unless it's all caps, the caps are initials. we unstuck them and add .
-    if ($n =~ /[a-z]/ and $n !~ /[A-Z]{2, } [A-Z]{2,}/) {
+    if ($n =~ /[a-z]/ and $n !~ /[A-Z]{2,} [A-Z]{2,}/) {
         $n =~ s/(\s|^)([A-Z]{2,3})(\.|\s|$)/$1 . toInitials($2) . $3/ge;
     } else {
     }

@@ -1109,10 +1109,10 @@ sub samePerson {
 	my $b_expd = 0;
 	my ($lasta,$firsta) = split(',',cleanName($a,' ','reparse'));
 	my ($lastb,$firstb) = split(',',cleanName($b,' ','reparse'));
-    return undef if defined($firsta) and !defined($firstb);
-    return undef if defined($firstb) and !defined($firsta);
-    return undef if defined($lasta) and !defined($lastb);
-    return undef if defined($lastb) and !defined($lasta);
+   # return undef if defined($firsta) and !defined($firstb);
+   # return undef if defined($firstb) and !defined($firsta);
+   # return undef if defined($lasta) and !defined($lastb);
+   # return undef if defined($lastb) and !defined($lasta);
 	#print "here '$lasta'-'$lastb'\n";
     $lasta =~ s/\s+Jr\.?$// if defined $lasta;
     $lastb =~ s/\s+Jr\.?$// if defined $lastb;
@@ -6990,7 +6990,8 @@ ALLYN          0.001 90.024   4275
 ENDNAMES
 
 $COMMON_SURNAMES = <<ENDNAMES;
-SMITH          1.006  1.006      1 JOHNSON        0.810  1.816      2
+SMITH          1.006  1.006      1 
+JOHNSON        0.810  1.816      2
 WILLIAMS       0.699  2.515      3
 JONES          0.621  3.136      4
 BROWN          0.621  3.757      5

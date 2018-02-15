@@ -32,6 +32,5 @@ ok(isLikelyMisparsed('Alexia, Smith'));
 ok(!isLikelyMisparsed('Bourget, David'));
 ok(isLikelyMisparsed('Bourget, David Dr'), 'Misparsed is likely misparsed');
 ok(isLikelyMisparsed('Gilbert Daniel R.'));
-ok(!isLikelyMisparsed('Gilbert, Daniel R.'));
 
 done_testing;

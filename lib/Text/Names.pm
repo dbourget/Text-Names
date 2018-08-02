@@ -1122,6 +1122,7 @@ sub samePerson {
         if (!$opts{loose}) {
             return undef;
         } else {
+            
             return samePerson("$firsta, $lasta", "$lastb, $firstb", loose=>0) || samePerson("$firsta $lasta","$firstb $lastb", loose=>0);
         }
     }
@@ -1207,6 +1208,7 @@ sub samePerson {
 
 sub equivtext {
     my ($a,$b) = @_;
+    #warn "equivtext: $a ~ $b";
     $a = lc rmDiacritics($a); 
     $b = lc rmDiacritics($b);
     $a =~ s/\.\s*$//;
@@ -1272,6 +1274,15 @@ sub cleanName {
     $n =~ s/^Iep,$/Unknown, Unknown/;
     #links aren't names
     $n = "Unknown, Unknown" if $n =~ /http:\/\//;
+
+    # name like DavidBourget
+    if ($n =~ /(\p{L}*\p{Ll})(\p{Lu})/) {
+        #warn $n;
+        # don't intervene if there are some spaces or the first stuck bit is 'mac'
+        unless ($1 =~ /^(Mac|Mc|$PREFIXES)$/i or $n =~ /[\p{L},\.] \p{L}/ ) {
+            $n =~ s/(\p{Ll})(\p{Lu})/$1 $2/g 
+        }
+    }
 
     # capitalize if nocaps
     if ($n !~ /[A-Z]/) {

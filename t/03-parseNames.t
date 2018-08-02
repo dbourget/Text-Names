@@ -1,4 +1,4 @@
-use Text::Names 'parseNames','cleanName','composeName','parseName';
+use Text::Names 'parseNames','cleanName','composeName','parseName','cleanParseName';
 use Test::More;
 use utf8;
 binmode(STDOUT,":utf8");
@@ -8,6 +8,9 @@ is(cleanName("Ho, T. . ."),"Ho, T.");
 is(cleanName("D.'Arms, D."), "D'Arms, D.");
 is(cleanName("D.’Arms, D."), "D'Arms, D.");
 is(cleanName("D’Arms, D."), "D’Arms, D.");
+my @n = cleanParseName("T Nagel");
+is($n[1], "Nagel", 'Nagel last name');
+is($n[0], "T.", 'Nagel first name');
 my ($f,$l) = parseName("D’Arms, D.");
 is($l,"D’Arms");
 
@@ -52,7 +55,8 @@ my %tests = (
     cleanName("RawlsJC") => "Rawls, J. C.",
     cleanName("McKim, John") => "McKim, John",
     cleanName("John McKim") => "McKim, John",
-    cleanName("McKim") => "McKim, "
+    cleanName("McKim") => "McKim, ",
+    cleanName("DavidBourget") => "Bourget, David"
 );
 is(cleanName("Hacker, PMS"),"Hacker, P. M. S.");
 is(cleanName("Doe, Bob"),"Doe, Bob");

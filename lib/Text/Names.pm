@@ -64,6 +64,22 @@ our @NAME_PREFIXES = qw(de di du da le la van von der den des ten ter y e);
   );
 push @Text::Capitalize::exceptions, @NAME_PREFIXES;
 
+
+#
+# Sinijns
+#
+# These are small parts of either given or family names that should not have periods removed from them
+# E.g. 'St. John' can be a given or family name (pronounced 'sinjin', hence the unusual variable name)
+#
+# We want to ensure these are capitalized, hence why they can't just be added to @NAME_PREFIXES above
+# We add them to @NAME_PREFIXES now because @NAME_PREFIXES is used when composing first and last names.
+# This prevents it from being split from the next bit. e.g. Jimmy St. John should be parsed as St. John, Jimmy. (Not John, Jimmy St.)
+#
+our @SINJINS = qw/st/;
+our $SINJINS_RE = "(?:" . join('|',@SINJINS) . ")";
+
+@NAME_PREFIXES = (@NAME_PREFIXES, @SINJINS);
+
 my $APOST = "(?:’|')";
 
 $Text::Capitalize::word_rule =  qr{ ([^\w\s]*)   # $1 - leading punctuation 
@@ -1258,7 +1274,7 @@ sub cleanName {
 
     $n =~ s/[\r\n]/ /gsm;
     $n =~ s/(\w)\s*,/$1,/g;
-	$n =~ s/([a-z]{2,})\./$1/gi; #remove unwanted .
+	$n =~ s/(?!$SINJINS_RE)([a-z]{2,})\./$1/gi; #remove unwanted . (unless it is a $SINJIN like St. in St. John)
 	$n =~ s/(\W|\.|\s)([A-Z])(\s|$)/$1$2.$3/g; #add . to initials
 	$n =~ s/(\W|\.|\s)([A-Z])(\s|$)/$1$2.$3/g; #add . to initials (repeat for overlaps)
 	$n =~ s/\.\s*([A-Z])/". " . uc $1/ieg; # adjust spacing between initials

@@ -1,6 +1,8 @@
 use Text::Names 'parseNames','cleanName','composeName','parseName','cleanParseName';
 use Test::More;
 use utf8;
+use strict;
+use warnings;
 binmode(STDOUT,":utf8");
 
 is(cleanName("T.H. Ho"),"Ho, T. H.");
@@ -56,7 +58,13 @@ my %tests = (
     cleanName("McKim, John") => "McKim, John",
     cleanName("John McKim") => "McKim, John",
     cleanName("McKim") => "McKim, ",
-    cleanName("DavidBourget") => "Bourget, David"
+    cleanName("DavidBourget") => "Bourget, David",
+
+    # Sinjins
+    cleanName('St. John Lambert') => 'Lambert, St. John',
+    cleanName('Lambert, St. John') => 'Lambert, St. John',
+    cleanName('Jimmy St. John') => 'St. John, Jimmy',
+    cleanName('St. John, Jimmy') => 'St. John, Jimmy'
 );
 is(cleanName("Hacker, PMS"),"Hacker, P. M. S.");
 is(cleanName("Doe, Bob"),"Doe, Bob");

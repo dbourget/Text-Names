@@ -1285,7 +1285,7 @@ sub cleanName {
 
     #warn "$n";
     #unless it's all caps, the caps are initials. we unstuck them and add .
-    if ($n =~ /[a-z]/ and $n !~ /[A-Z]{2, } [A-Z]{2,}/) {
+    if ($n =~ /[a-z]/ and $n !~ /[A-Z]{2,} [A-Z]{2,}/) {
         $n =~ s/(\s|^)([A-Z]{2,3})(\.|\s|$)/$1 . toInitials($2) . $3/ge;
     } else {
     }

@@ -45,7 +45,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = ();
 
-our $VERSION = '0.44';
+our $VERSION = '0.46';
 
 
 #
@@ -1109,10 +1109,10 @@ sub samePerson {
 	my $b_expd = 0;
 	my ($lasta,$firsta) = split(',',cleanName($a,' ','reparse'));
 	my ($lastb,$firstb) = split(',',cleanName($b,' ','reparse'));
-    return undef if defined($firsta) and !defined($firstb);
-    return undef if defined($firstb) and !defined($firsta);
-    return undef if defined($lasta) and !defined($lastb);
-    return undef if defined($lastb) and !defined($lasta);
+   # return undef if defined($firsta) and !defined($firstb);
+   # return undef if defined($firstb) and !defined($firsta);
+   # return undef if defined($lasta) and !defined($lastb);
+   # return undef if defined($lastb) and !defined($lasta);
 	#print "here '$lasta'-'$lastb'\n";
     $lasta =~ s/\s+Jr\.?$// if defined $lasta;
     $lastb =~ s/\s+Jr\.?$// if defined $lastb;
@@ -1122,6 +1122,7 @@ sub samePerson {
         if (!$opts{loose}) {
             return undef;
         } else {
+            
             return samePerson("$firsta, $lasta", "$lastb, $firstb", loose=>0) || samePerson("$firsta $lasta","$firstb $lastb", loose=>0);
         }
     }
@@ -1207,6 +1208,7 @@ sub samePerson {
 
 sub equivtext {
     my ($a,$b) = @_;
+    #warn "equivtext: $a ~ $b";
     $a = lc rmDiacritics($a); 
     $b = lc rmDiacritics($b);
     $a =~ s/\.\s*$//;
@@ -1268,17 +1270,26 @@ sub cleanName {
     #warn $n;
 	#$n =~ s/([\w'-])\s*,(.*)\s(van|von|von\sder|van\sder|di|de|del|du|da)(\s.*|$)/(lc $3) . $1 . "," . $2 . $4/ie;
     #warn $n;
-    # replace Iep by UNKNOWN
+    # replace Iep by UNKNOWN (for PP)
     $n =~ s/^Iep,$/Unknown, Unknown/;
     #links aren't names
     $n = "Unknown, Unknown" if $n =~ /http:\/\//;
+
+    # name like DavidBourget
+    if ($n =~ /(\p{L}*\p{Ll})(\p{Lu})/) {
+        #warn $n;
+        # don't intervene if there are some spaces or the first stuck bit is 'mac'
+        unless ($1 =~ /^(Mac|Mc|$PREFIXES)$/i or $n =~ /[\p{L},\.] \p{L}/ ) {
+            $n =~ s/(\p{Ll})(\p{Lu})/$1 $2/g 
+        }
+    }
 
     # capitalize if nocaps
     if ($n !~ /[A-Z]/) {
         $n = capitalize($n,notSentence=>1);#_title($n, PRESERVE_ANYCAPS=>1, NOT_CAPITALIZED=>\@PREFIXES);	
     }
 
-    # do we have initials suck on the surname like so: RawlsJ. 
+    # do we have initials stuck on the surname like so: RawlsJ. 
     unless ($n =~ /,/ or $n =~ /\w \w/) {
         $n =~ s/([A-Z][a-z]{1,})((?:[A-Z](?:$|\.|\s|)\s*)+)\s*$/$1, $2/g;
     }
@@ -6990,7 +7001,8 @@ ALLYN          0.001 90.024   4275
 ENDNAMES
 
 $COMMON_SURNAMES = <<ENDNAMES;
-SMITH          1.006  1.006      1 JOHNSON        0.810  1.816      2
+SMITH          1.006  1.006      1 
+JOHNSON        0.810  1.816      2
 WILLIAMS       0.699  2.515      3
 JONES          0.621  3.136      4
 BROWN          0.621  3.757      5

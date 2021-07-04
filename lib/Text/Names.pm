@@ -955,18 +955,19 @@ sub parseNames {
         #print "$in\n";
         if ($in =~ /$AND/i) {
 
-            #print "AND:$in\n";
+            #warn "AND:$in\n";
             # now we check for double duty for commas
             # We fix what would be missing commas on this hypothesis
             my $t = $in;
             $t =~ s/([a-z])\s+([A-Z])(\.|\s|$)/$1, $2$3/g;
             # we check if it's a silly case of commas playing double duty
             if ($t =~ /,.+,.+,.+$AND/) {
-                #print "SILLY: $t\n";
+                #warn "SILLY: $t\n";
                 my @to;
                 my @tokens = split(/$COMMA_AND/i,$t);
                 for (my $ti=0; $ti <= $#tokens;$ti+=2) {
-                    push @to, join(", ",@tokens[$ti..$ti+1]); 
+	                  my @extract = grep { $_ } @tokens[$ti..$ti+1];
+                    push @to, join(", ",@extract); 
                 }
                 return parseNameList(@to,$reverse);
             } 
@@ -974,11 +975,12 @@ sub parseNames {
             # no silliness. what's after the AND will tell us the format 
             # if there's a comma after, it's probably reversed
             if ($in =~ /$AND.*,/i) {
-
+                #warn "AND:$in\n";
                 return parseNameList(split(/$SEMI_AND/i,$in),$reverse);
             } 
 
             else {
+                #warn "neither";
                 my @parts = split(/$COMMA_AND/i,$in);
                 return parseNameList(@parts,$reverse);
             }
@@ -1034,7 +1036,7 @@ sub parseNames {
 
 sub parseNameList {
     my @auths;
-    #print "Got: " . join("---", @auths) . "\n";
+    #warn "Got: " . join("---", @_) . "\n";
     my $reverse;
     if (defined($_[-1]) and $_[-1] eq 'reverse') {
         pop @_; 
@@ -1060,6 +1062,8 @@ sub parseNameList {
     foreach my $a (@new) {
         next unless $a;
         my ($f,$l) = parseName($a);
+        #$l =~ s/^\s+//;
+        #$f =~ s/^\s+//;
         push @auths, ($reverse ? "$f, $l" : "$l, $f");
     }
     return @auths;
@@ -1114,9 +1118,12 @@ sub samePerson {
    # return undef if defined($lasta) and !defined($lastb);
    # return undef if defined($lastb) and !defined($lasta);
 	#print "here '$lasta'-'$lastb'\n";
-    $lasta =~ s/\s+Jr\.?$// if defined $lasta;
-    $lastb =~ s/\s+Jr\.?$// if defined $lastb;
-
+    $firsta = "" unless defined $firsta;
+    $firstb = "" unless defined $firstb;
+    $lasta = "" unless defined $lasta;
+    $lastb = "" unless defined $lastb;
+    $lasta =~ s/\s+Jr\.?$//;
+    $lastb =~ s/\s+Jr\.?$//;
     # check for reversed name if loose
     if (!equivtext($lasta,$lastb)) {
         if (!$opts{loose}) {

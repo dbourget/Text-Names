@@ -1122,8 +1122,11 @@ sub samePerson {
     $firstb = "" unless defined $firstb;
     $lasta = "" unless defined $lasta;
     $lastb = "" unless defined $lastb;
-    $lasta =~ s/\s+Jr\.?$//;
-    $lastb =~ s/\s+Jr\.?$//;
+    # remove all titles like mr, phd, prof, 
+    $lasta =~ s/\s+(mr|phd|prof|dr|ms|mrs|sir)\.?$//i;
+    $lastb =~ s/\s+(mr|phd|prof|dr|ms|mrs|sir)\.?$//i;
+    $lasta =~ s/\s+Jr\.?$//i;
+    $lastb =~ s/\s+Jr\.?$//i;
     # check for reversed name if loose
     if (!equivtext($lasta,$lastb)) {
         if (!$opts{loose}) {

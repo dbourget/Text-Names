@@ -847,6 +847,7 @@ sub normalizeNameWhitespace {
     $in;
 
 }
+# return (firstname, lastname)
 sub parseName {
  	my $in = shift;
 
@@ -1303,7 +1304,6 @@ sub cleanName {
     unless ($n =~ /,/ or $n =~ /\w \w/) {
         $n =~ s/([A-Z][a-z]{1,})((?:[A-Z](?:$|\.|\s|)\s*)+)\s*$/$1, $2/g;
     }
-
     #warn "$n";
     #unless it's all caps, the caps are initials. we unstuck them and add .
     if ($n =~ /[a-z]/ and $n !~ /[A-Z]{2,} [A-Z]{2,}/) {
@@ -1313,10 +1313,24 @@ sub cleanName {
     #warn $n;
 
     my ($f,$l) = parseName($n);
+    #for the case of Berlin, IsaiahHG
+    if ($f =~ /^(.*?\p{Ll})((?:\p{Lu}\.?)+)$/) {
+        my $first = $1;
+        my $initials = $2;
+        # if no sppace between initials, add it
+        if ($initials !~ /\s/ and $initials !~ /\./) {
+            my @init_parts = split(//, $initials);
+            $initials = join(" ", @init_parts);
+        }
+        $f = "$first $initials";
+        $n = normalizeNameWhitespace("$l, $f");# normalize spacece
+    } else {
+        $n = composeName($f,$l);
+    }
+
 
     #warn "** $l, $f";
     #warn "$l, $f";
-    $n = composeName($f,$l);
     # now final capitalization
     $n = capitalize($n,notSentence=>1); #,PRESERVE_ANYCAPS=>1, NOT_CAPITALIZED=>\@PREFIXES);	
     return $n;
